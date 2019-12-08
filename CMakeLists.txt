@@ -39,12 +39,15 @@ add_executable(pb_battleroyale
 
 	${source}/handlers/mainhandler.cpp
 
+	${source}/managers/modmanager.cpp
 	${source}/managers/musicmanager.cpp
 	${source}/managers/obstaclemanager.cpp
 	${source}/managers/texturemanager.cpp
 
 	${source}/map/location.cpp
 	${source}/map/mapmanager.cpp
+
+	${source}/mod/mod.cpp
 
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/add_on/scriptbuilder/scriptbuilder.cpp
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/add_on/scriptstdstring/scriptstdstring.cpp
