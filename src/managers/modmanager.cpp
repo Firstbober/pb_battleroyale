@@ -1,6 +1,7 @@
 #include "modmanager.hpp"
 #include <filesystem>
 #include <ini.h>
+#include <scriptstdstring/scriptstdstring.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
 
@@ -23,6 +24,7 @@ ModManager::ModManager(std::string mods_directory) {
 	this->engine = asCreateScriptEngine();
 	int r = this->engine->SetMessageCallback(asFUNCTION(as_message_handler), 0, asCALL_CDECL);
 	assert(r >= 0);
+	RegisterStdString(engine);
 
 	SPDLOG_INFO("Initialized ModManager");
 }
@@ -34,7 +36,7 @@ ModManager::~ModManager() {
 
 	this->engine->ShutDownAndRelease();
 
-	SPDLOG_INFO("Cleaned  ModManager");
+	SPDLOG_INFO("Cleaned ModManager");
 }
 
 static int handler(void* user, const char* section, const char* name, const char* value) {
