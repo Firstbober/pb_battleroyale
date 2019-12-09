@@ -1,19 +1,23 @@
 #include <handlers/mainhandler.hpp>
+#include <managers/modmanager.hpp>
 
 Location* location;
 sf::Texture texture;
+ModManager mm("mods");
 
 void MainHandler::init() {
 	// Check if we have map.bin, if not create it
 	if(!Helpers::file_exists("map.bin")) {
 		SPDLOG_INFO("Map file not found, creating...");
 		uint16_t map[LOCATION_BLOCKS_NUMBER];
-		std::fill(map, map+LOCATION_BLOCKS_NUMBER, 1);
+		std::fill(map, map + LOCATION_BLOCKS_NUMBER, 1);
 		location->save("map.bin", map);
 	}
 
 	location = new Location(TextureManager().get("assets/backgrounds/19"), TextureManager().get_obstacles(), "map.bin");
 	map.add_location_to_array(0, 0, location);
+
+	mm.init_mods();
 }
 
 void MainHandler::draw(sf::RenderWindow* window) {
