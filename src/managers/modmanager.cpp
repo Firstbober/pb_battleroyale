@@ -4,9 +4,25 @@
 #include <spdlog/spdlog.h>
 #include <string.h>
 
+void as_message_handler(const asSMessageInfo* msg, void* param) {
+	char* buf;
+	sprintf(buf, "%s (%d, %d) : %s\n", msg->section, msg->row, msg->col, msg->message);
+
+	if(msg->type == asMSGTYPE_ERROR) {
+		SPDLOG_ERROR(buf);
+	} else if(msg->type == asMSGTYPE_WARNING) {
+		SPDLOG_WARN(buf);
+	} else if(msg->type == asMSGTYPE_INFORMATION) {
+		SPDLOG_INFO(buf);
+	}
+}
+
 ModManager::ModManager(std::string mods_directory) {
 	this->mods_directory = mods_directory;
+
 	this->engine = asCreateScriptEngine();
+	int r = this->engine->SetMessageCallback(asFUNCTION(as_message_handler), 0, asCALL_CDECL);
+	assert(r >= 0);
 
 	SPDLOG_INFO("Initialized ModManager");
 }
