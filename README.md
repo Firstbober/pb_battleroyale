@@ -22,3 +22,4 @@ Compilation is very easy. Just open the terminal and go to the project directory
 - [spdlog](https://github.com/gabime/spdlog) - logging
 - [pbloader](https://github.com/CodersArmyTeam/pbloader) - my old project to add a modapi to PB. Part of the code 
 and the knowledge of how PB works comes from this project.
+- [AngelScript](https://www.angelcode.com/angelscript/) - scripting language we using.
