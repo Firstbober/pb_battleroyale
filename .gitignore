@@ -3,4 +3,3 @@ bin/*
 !bin/assets
 .vscode
 despacito.wav
-thirdparty/angelscript
