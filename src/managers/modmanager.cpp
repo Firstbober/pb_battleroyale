@@ -7,7 +7,7 @@
 
 void as_message_handler(const asSMessageInfo* msg, void* param) {
 	char* buf;
-	sprintf(buf, "%s (%d, %d) : %s\n", msg->section, msg->row, msg->col, msg->message);
+	sprintf(buf, "%s (%d, %d): %s", msg->section, msg->row, msg->col, msg->message);
 
 	if(msg->type == asMSGTYPE_ERROR) {
 		SPDLOG_ERROR(buf);
@@ -18,6 +18,11 @@ void as_message_handler(const asSMessageInfo* msg, void* param) {
 	}
 }
 
+/* To delete */
+void as_print(std::string& msg) {
+	printf("PBBR mod print: %s\n", msg.c_str());
+}
+
 ModManager::ModManager(std::string mods_directory) {
 	this->mods_directory = mods_directory;
 
@@ -25,6 +30,9 @@ ModManager::ModManager(std::string mods_directory) {
 	int r = this->engine->SetMessageCallback(asFUNCTION(as_message_handler), 0, asCALL_CDECL);
 	assert(r >= 0);
 	RegisterStdString(engine);
+
+	r = engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(as_print), asCALL_CDECL);
+	assert(r >= 0);
 
 	SPDLOG_INFO("Initialized ModManager");
 }
@@ -61,7 +69,7 @@ static int handler(void* user, const char* section, const char* name, const char
 	return 1;
 }
 
-std::optional<Mod*> init_mod(std::filesystem::directory_entry dir) {
+std::optional<Mod*> init_mod(std::filesystem::directory_entry dir, asIScriptEngine* engine) {
 	std::string mod_config_path;
 	std::string main_script_path;
 
@@ -99,18 +107,18 @@ std::optional<Mod*> init_mod(std::filesystem::directory_entry dir) {
 			mod_config.version_minor,
 			mod_config.author);
 
-		return new Mod(mod_config, main_script_path);
+		return new Mod(mod_config, main_script_path, engine);
 	}
 }
 
 void ModManager::init_mods() {
 	for(auto&& i : std::filesystem::directory_iterator(this->mods_directory)) {
-		std::optional<Mod*> mod = init_mod(i);
+		std::optional<Mod*> mod = init_mod(i, this->engine);
 		if(mod) {
 			this->mods.push_back(*mod);
 		} else {
 			SPDLOG_ERROR("Can't load mod from {}", i.path().c_str());
-			return;
+			break;
 		}
 	}
 }

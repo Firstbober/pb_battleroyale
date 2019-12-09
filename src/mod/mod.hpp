@@ -13,9 +13,11 @@ typedef struct {
 class Mod {
 private:
 	mod_config config;
-	asIScriptContext* ctx;
+	bool is_active;
 
+	asIScriptContext* ctx;
+	asIScriptModule* module;
 public:
-	Mod(mod_config config, std::string filename);
+	Mod(mod_config config, std::string filename, asIScriptEngine* engine);
 	~Mod();
 };
