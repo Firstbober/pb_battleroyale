@@ -15,4 +15,7 @@ public:
 	~ModManager();
 
 	void init_mods();
+
+	void call_update();
+	void call_draw();
 };

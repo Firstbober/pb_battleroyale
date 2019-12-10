@@ -115,10 +115,26 @@ void ModManager::init_mods() {
 	for(auto&& i : std::filesystem::directory_iterator(this->mods_directory)) {
 		std::optional<Mod*> mod = init_mod(i, this->engine);
 		if(mod) {
-			this->mods.push_back(*mod);
+			if((*mod)->is_active()) {
+				this->mods.push_back(*mod);
+			} else {
+				SPDLOG_ERROR("Can't load mod from {}", i.path().c_str());
+			}
 		} else {
 			SPDLOG_ERROR("Can't load mod from {}", i.path().c_str());
 			break;
 		}
+	}
+}
+
+void ModManager::call_update() {
+	for(Mod* m : this->mods) {
+		m->update();
+	}
+}
+
+void ModManager::call_draw() {
+	for(Mod* m : this->mods) {
+		m->draw();
 	}
 }

@@ -1,9 +1,7 @@
 #include <handlers/mainhandler.hpp>
-#include <managers/modmanager.hpp>
 
 Location* location;
 sf::Texture texture;
-ModManager mm("mods");
 
 void MainHandler::init() {
 	// Check if we have map.bin, if not create it
@@ -17,7 +15,7 @@ void MainHandler::init() {
 	location = new Location(TextureManager().get("assets/backgrounds/19"), TextureManager().get_obstacles(), "map.bin");
 	map.add_location_to_array(0, 0, location);
 
-	mm.init_mods();
+	mod_man.init_mods();
 }
 
 void MainHandler::draw(sf::RenderWindow* window) {
@@ -28,12 +26,16 @@ void MainHandler::draw(sf::RenderWindow* window) {
 
 	map.update_location(window);
 
+	mod_man.call_draw();
+
 	window->display();
 }
 
 void MainHandler::update(sf::RenderWindow* window) {
 	for(auto&& object : this->objects)
 		object->update();
+
+	mod_man.call_update();
 }
 void MainHandler::clear() {
 	for(auto&& object : this->objects)
