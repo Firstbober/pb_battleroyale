@@ -2,6 +2,7 @@
 #include <datetime/datetime.h>
 #include <filesystem>
 #include <ini.h>
+#include <mod/reg_stdlib.hpp>
 #include <scriptarray/scriptarray.h>
 #include <scriptdictionary/scriptdictionary.h>
 #include <scriptmath/scriptmath.h>
@@ -22,26 +23,20 @@ void as_message_handler(const asSMessageInfo* msg, void* param) {
 	}
 }
 
-/* To delete */
-void as_print(std::string& msg) {
-	printf("PBBR mod print: %s\n", msg.c_str());
-}
-
 ModManager::ModManager(std::string mods_directory) {
 	this->mods_directory = mods_directory;
 
 	this->engine = asCreateScriptEngine();
 	int r = this->engine->SetMessageCallback(asFUNCTION(as_message_handler), 0, asCALL_CDECL);
 	assert(r >= 0);
+
 	RegisterStdString(engine);
-
-	r = this->engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(as_print), asCALL_CDECL);
-	assert(r >= 0);
-
 	RegisterScriptArray(this->engine, true);
 	RegisterScriptDictionary(this->engine);
 	RegisterScriptMath(this->engine);
 	RegisterScriptDateTime(this->engine);
+
+	RegisterSTDLIB(this->engine);
 
 	SPDLOG_INFO("Initialized ModManager");
 }

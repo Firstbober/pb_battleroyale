@@ -33,6 +33,7 @@ add_executable(pb_battleroyale
 	${source}/map/mapmanager.cpp
 
 	${source}/mod/mod.cpp
+	${source}/mod/reg_stdlib.cpp
 
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptbuilder/scriptbuilder.cpp
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
