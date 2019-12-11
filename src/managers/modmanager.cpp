@@ -1,6 +1,10 @@
 #include "modmanager.hpp"
+#include <datetime/datetime.h>
 #include <filesystem>
 #include <ini.h>
+#include <scriptarray/scriptarray.h>
+#include <scriptdictionary/scriptdictionary.h>
+#include <scriptmath/scriptmath.h>
 #include <scriptstdstring/scriptstdstring.h>
 #include <spdlog/spdlog.h>
 #include <string.h>
@@ -31,8 +35,13 @@ ModManager::ModManager(std::string mods_directory) {
 	assert(r >= 0);
 	RegisterStdString(engine);
 
-	r = engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(as_print), asCALL_CDECL);
+	r = this->engine->RegisterGlobalFunction("void print(const string &in)", asFUNCTION(as_print), asCALL_CDECL);
 	assert(r >= 0);
+
+	RegisterScriptArray(this->engine, true);
+	RegisterScriptDictionary(this->engine);
+	RegisterScriptMath(this->engine);
+	RegisterScriptDateTime(this->engine);
 
 	SPDLOG_INFO("Initialized ModManager");
 }

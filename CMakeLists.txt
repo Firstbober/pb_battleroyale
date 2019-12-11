@@ -38,6 +38,9 @@ add_executable(pb_battleroyale
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptstdstring/scriptstdstring.cpp
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptstdstring/scriptstdstring_utils.cpp
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptarray/scriptarray.cpp
+	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptdictionary/scriptdictionary.cpp
+	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/scriptmath/scriptmath.cpp
+	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/datetime/datetime.cpp
 )
 
 target_link_libraries(pb_battleroyale pthread sfml-graphics sfml-window sfml-system sfml-audio)
