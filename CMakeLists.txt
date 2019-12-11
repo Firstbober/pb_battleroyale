@@ -3,7 +3,10 @@ include(ExternalProject)
 project(pb_battleroyale)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -DSPDLOG_COMPILED_LIB")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
+find_package(SFML COMPONENTS graphics window system audio)
 
 include_directories(
 	${CMAKE_SOURCE_DIR}/src
@@ -44,5 +47,11 @@ add_executable(pb_battleroyale
 	${CMAKE_SOURCE_DIR}/thirdparty/angelscript/sdk/add_on/datetime/datetime.cpp
 )
 
-target_link_libraries(pb_battleroyale pthread sfml-graphics sfml-window sfml-system sfml-audio)
+add_definitions(-DSPDLOG_COMPILED_LIB)
+
+target_link_libraries(pb_battleroyale sfml-graphics sfml-window sfml-system sfml-audio)
 target_link_libraries(pb_battleroyale ${ANGELSCRIPT_LIBRARY_NAME})
+
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+target_link_libraries(pb_battleroyale pthread)
+endif()
