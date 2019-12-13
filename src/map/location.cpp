@@ -1,6 +1,6 @@
 #include <cstring>
-#include <map/location.hpp>
 #include <managers/texturemanager.hpp>
+#include <map/location.hpp>
 
 const int SCALE = 10;
 
@@ -61,7 +61,7 @@ void Location::set_obstacle(int x, int y, Obstacle* obstacle) {
 	quad[3].position = sf::Vector2f(x * SCALE, (y + 1) * SCALE);
 
 	int id = obstacle->get_id();
-	sf::IntRect rect = obstacle->get_rect();	
+	sf::IntRect rect = obstacle->get_rect();
 
 	// Calculation of the texture position
 	quad[0].texCoords = sf::Vector2f(rect.left, rect.top);

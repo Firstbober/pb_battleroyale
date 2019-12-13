@@ -30,8 +30,9 @@ ModManager::ModManager(std::string mods_directory) {
 	int r = this->engine->SetMessageCallback(asFUNCTION(as_message_handler), 0, asCALL_CDECL);
 	assert(r >= 0);
 
-	RegisterStdString(engine);
-	RegisterScriptArray(this->engine, true);
+	RegisterScriptArray(this->engine, false);
+	RegisterStdString(this->engine);
+	RegisterStdStringUtils(this->engine);
 	RegisterScriptDictionary(this->engine);
 	RegisterScriptMath(this->engine);
 	RegisterScriptDateTime(this->engine);
