@@ -18,7 +18,7 @@ void as_log_error(std::string& msg) {
 	SPDLOG_ERROR(msg.c_str());
 }
 
-/* Obstacle  */
+/* Obstacle */
 
 void as_obj_Obstacle_constructor(Obstacle* memory) {
 	new(memory) Obstacle();
@@ -36,8 +36,10 @@ void as_obj_Obstacle_destructor(Obstacle* memory) {
 	((Obstacle*)memory)->~Obstacle();
 }
 
-Obstacle& as_obj_Obstacle_func_get_rect(Obstacle* ob) {
-	return *ob;
+sf::IntRect& as_obj_Obstacle_func_get_rect(Obstacle* ob) {
+	Obstacle o = *ob;
+	const sf::IntRect& i = o.get_rect();
+	return (sf::IntRect&)i;
 }
 
 /* sf::IntRect */
@@ -91,35 +93,86 @@ sf::Texture& as_obj_sfTexture_op_assign(sf::Texture* tx, const sf::Texture& to_s
 
 /* Location */
 
-void as_obj_Location_constructor(Location* memory) {
-	new(memory) Location();
+class LocWrap {
+private:
+	/* data */
+public:
+	Location* loc;
+	LocWrap(/* args */);
+	LocWrap(sf::Texture& background, sf::Texture& tileset);
+	LocWrap(sf::Texture& background, sf::Texture& tileset, const char* fname);
+	~LocWrap();
+};
+
+LocWrap::LocWrap(/* args */) {
+	loc = new Location();
 }
 
-void as_obj_Location_constructor_bgts(Location* memory, sf::Texture& background, sf::Texture& tileset) {
-	new(memory) Location(background, tileset);
+LocWrap::LocWrap(sf::Texture& background, sf::Texture& tileset) {
+	loc = new Location(background, tileset);
 }
 
-void as_obj_Location_constructor_bgtsfn(Location* memory, sf::Texture& background, sf::Texture& tileset, std::string& str) {
-	new(memory) Location(background, tileset, str.c_str());
+LocWrap::LocWrap(sf::Texture& background, sf::Texture& tileset, const char* fname) {
+	loc = new Location(background, tileset, fname);
 }
 
-void as_obj_Location_destructor(Location* memory) {
-	((Location*)memory)->~Location();
+LocWrap::~LocWrap() {
+	delete loc;
 }
 
-Location& as_obj_Location_op_assign(Location* loc, const Location& to_set) {
-	Location l = to_set;
+void as_obj_Location_constructor(void* memory) {
+	new(memory) LocWrap();
+}
+
+void as_obj_Location_constructor_bgts(LocWrap* memory, sf::Texture& background, sf::Texture& tileset) {
+	new(memory) LocWrap(background, tileset);
+}
+
+void as_obj_Location_constructor_bgtsfn(LocWrap* memory, sf::Texture& background, sf::Texture& tileset, std::string& str) {
+	new(memory) LocWrap(background, tileset, str.c_str());
+}
+
+void as_obj_Location_destructor(void* memory) {
+	((LocWrap*)memory)->~LocWrap();
+}
+
+LocWrap& as_obj_Location_op_assign(LocWrap* loc, const LocWrap& to_set) {
+	LocWrap l = to_set;
 	loc = &l;
 
 	return *loc;
 }
 
+void as_obj_Location_func_set_obstacle(LocWrap* loc) {
+	loc->loc->set_obstacle(6, 6, new Obstacle(2));
+	//Location* loc = (Location*)gen->GetObject();
+	//SPDLOG_INFO(" ORIGN X: {}", loc->getOrigin().x);
+	//loc->load("map.bin");
+	//loc->set_obstacle(x, y, &ob);
+
+	//Obstacle* o = &ob;
+	//SPDLOG_WARN(" X: {}", x);
+	//SPDLOG_WARN(" Y: {}", y);
+
+	//loc->loc->set_obstacle(x, y, new Obstacle(2));
+	//SPDLOG_WARN(" ID: {}", ob.get_id());
+	//((Location*)l1)->set_obstacle(6, 6, new Obstacle(2));
+
+	//loc->set_obstacle(x, y, new Obstacle(3));
+	/*
+	try
+	{
+		Location* l = reinterpret_cast<Location*>(loc);
+		l->set_obstacle(6, 6, new Obstacle(6));
+	}
+	catch(const std::exception& e)
+	{
+		SPDLOG_ERROR("{}", e.what());
+	}
+	*/
+}
+
 void RegisterSTDLIB(asIScriptEngine* engine) {
-	sf::IntRect aa;
-
-	Location a;
-	Location b = a;
-
 	int r;
 	/* Register logger functions */
 	r = engine->RegisterGlobalFunction("void log_info(const string msg)", asFUNCTION(as_log_info), asCALL_CDECL);
@@ -127,6 +180,35 @@ void RegisterSTDLIB(asIScriptEngine* engine) {
 	r = engine->RegisterGlobalFunction("void log_warn(const string msg)", asFUNCTION(as_log_warn), asCALL_CDECL);
 	assert(r >= 0);
 	r = engine->RegisterGlobalFunction("void log_error(const string msg)", asFUNCTION(as_log_error), asCALL_CDECL);
+	assert(r >= 0);
+
+	r = engine->RegisterObjectType("Location", sizeof(LocWrap), asOBJ_VALUE | asGetTypeTraits<LocWrap>());
+	assert(r >= 0);
+	r = engine->RegisterObjectBehaviour("Location", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(as_obj_Location_constructor), asCALL_CDECL_OBJLAST);
+	assert(r >= 0);
+	/*
+	r = engine->RegisterObjectBehaviour(
+		"Location",
+		asBEHAVE_CONSTRUCT,
+		"void f(sf::Texture& in, sf::Texture& in)",
+		asFUNCTION(as_obj_Location_constructor_bgts),
+		asCALL_CDECL_OBJFIRST);
+	assert(r >= 0);
+	r = engine->RegisterObjectBehaviour(
+		"Location",
+		asBEHAVE_CONSTRUCT,
+		"void f(sf::Texture& in, sf::Texture& in, const string filename)",
+		asFUNCTION(as_obj_Location_constructor_bgtsfn),
+		asCALL_CDECL_OBJFIRST);
+	assert(r >= 0);
+	*/
+	r = engine->RegisterObjectBehaviour("Location", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(as_obj_Location_destructor), asCALL_CDECL_OBJLAST);
+	assert(r >= 0);
+
+	r = engine->RegisterObjectMethod("Location", "Location &opAssign(const Location& in)", asFUNCTION(as_obj_Location_op_assign), asCALL_CDECL_OBJLAST);
+	assert(r >= 0);
+
+	r = engine->RegisterObjectMethod("Location", "void aqa_dbstacle()", asFUNCTION(as_obj_Location_func_set_obstacle), asCALL_CDECL_OBJLAST);
 	assert(r >= 0);
 
 	/* Register basic data types */
@@ -193,27 +275,5 @@ void RegisterSTDLIB(asIScriptEngine* engine) {
 	assert(r >= 0);
 
 	//Location
-	r = engine->RegisterObjectType("Location", sizeof(Location), asOBJ_VALUE | asGetTypeTraits<Location>());
-	assert(r >= 0);
-	r = engine->RegisterObjectBehaviour("Location", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(as_obj_Location_constructor), asCALL_CDECL_OBJLAST);
-	assert(r >= 0);
-	r = engine->RegisterObjectBehaviour(
-		"Location",
-		asBEHAVE_CONSTRUCT,
-		"void f(sf::Texture& in, sf::Texture& in)",
-		asFUNCTION(as_obj_Location_constructor_bgts),
-		asCALL_CDECL_OBJFIRST);
-	assert(r >= 0);
-	r = engine->RegisterObjectBehaviour(
-		"Location",
-		asBEHAVE_CONSTRUCT,
-		"void f(sf::Texture& in, sf::Texture& in, const string filename)",
-		asFUNCTION(as_obj_Location_constructor_bgtsfn),
-		asCALL_CDECL_OBJFIRST);
-	assert(r >= 0);
-	r = engine->RegisterObjectBehaviour("Location", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(as_obj_Location_destructor), asCALL_CDECL_OBJLAST);
-	assert(r >= 0);
-
-	r = engine->RegisterObjectMethod("Location", "Location &opAssign(const Location& in)", asFUNCTION(as_obj_Location_op_assign), asCALL_CDECL_OBJLAST);
-	assert(r >= 0);
+	
 }
